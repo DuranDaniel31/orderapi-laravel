@@ -19,6 +19,6 @@ class OrderActivitySeeder extends Seeder
         $order->activities()->attach($activity->id);
 
         $activity = Activity::find(2);
-        $order->activities()->attach($activity->id); 
+        $order->activities()->attach($activity->id);
     }
 }

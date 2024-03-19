@@ -15,18 +15,17 @@ class ActivitySeeder extends Seeder
     {
         Activity::insert([
             [
-                'description' =>'Activitidad de prueba',
+                'description' => 'Actividad de prueba',
                 'hours' => 8,
                 'technician_id' => 1,
                 'type_id' => 1
             ],
             [
-                'description' =>'Activitidad de prueba 2',
+                'description' => 'Actividad de prueba 2',
                 'hours' => 16,
-                'technician_id' => 2,
+                'technician_id' => 1,
                 'type_id' => 2
             ]
         ]);
-
     }
 }

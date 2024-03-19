@@ -9,38 +9,37 @@ use Illuminate\Support\Facades\Validator;
 
 class TypeActivityController extends Controller
 {
-
     private $rules = [
         'description' => 'required|string|max:50|min:3',
     ];
 
-    private $traductionAttributes = array(
+    private $traductionAttributes = [
         'description' => 'descripción',
-    );
+    ];
 
     public function applyValidator(Request $request)
     {
         $validator = Validator::make($request->all(), $this->rules);
         $validator->setAttributeNames($this->traductionAttributes);
         $data = [];
-        if($validator-> fails())
+        if($validator->fails())
         {
-            $data  = response()->json([
-                'errors ' => $validator->errors(),
+            $data = response()->json([
+                'errors' => $validator->errors(),
                 'data' => $request->all()
-            ],Response::HTTP_BAD_REQUEST);
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         return $data;
     }
-
+    
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $type_activityes = TypeActivity::all();
-      return response()->json($type_activityes, Response::HTTP_OK);
+        $types = TypeActivity::all();
+        return response()->json($types, Response::HTTP_OK);
     }
 
     /**
@@ -53,13 +52,13 @@ class TypeActivityController extends Controller
         {
             return $data;
         }
+
         $type_activity = TypeActivity::create($request->all());
-        $reponse = [
+        $response = [
             'message' => 'Registro creado exitosamente',
             'type_activity' => $type_activity
         ];
-
-        return response()->json($reponse, Response::HTTP_CREATED);
+        return response()->json($response, Response::HTTP_CREATED);
     }
 
     /**
@@ -80,13 +79,13 @@ class TypeActivityController extends Controller
         {
             return $data;
         }
-        $type_activity -> update($request->all());
-        $reponse = [
+
+        $type_activity->update($request->all());
+        $response = [
             'message' => 'Registro actualizado exitosamente',
             'type_activity' => $type_activity
         ];
-
-        return response()->json($reponse, Response::HTTP_OK);
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**
@@ -94,11 +93,11 @@ class TypeActivityController extends Controller
      */
     public function destroy(TypeActivity $type_activity)
     {
-        $type_activity -> delete();
-        $reponse = [
-          'message' => 'Registro eliminado exitosamente',
+        $type_activity->delete();
+        $response = [
+            'message' => 'Registro eliminado exitosamente',
             'type_activity' => $type_activity->id
         ];
-        return response()->json($reponse, Response::HTTP_OK);
+        return response()->json($response, Response::HTTP_OK);
     }
 }

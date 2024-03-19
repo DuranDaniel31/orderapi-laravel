@@ -10,19 +10,21 @@ use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
-        private $rules = [
-        'document' => 'required|integer|max:99999999999999999999|min:1',
-        'name' => 'required|string|max:80|min:3',
-        'especiality' => 'string|max:50|min:3',
-        'phone' => 'string|max:30'
+    private $rules = [
+        'legalization_date' => 'required|date|date_format:Y-m-d',
+        'address' => 'required|string|max:50|min:3',
+        'city' => 'required|string|max:50|min:3',
+        'causal_id' => 'required|numeric',
+        'observation_id' => 'numeric',
     ];
 
-    private $traductionAttributes = array(
-        'document' => 'documento',
-        'name' => 'nombre',
-        'especiality' => 'especialidad',
-        'phone' => 'teléfono'
-    );
+    private $traductionAttributes = [
+        'legalization_date' => 'fecha de legalización',
+        'address' => 'dirección',
+        'city' => 'ciudad',
+        'causal_id' => 'causal',
+        'observation_id' => 'observación'
+    ];
 
     public function applyValidator(Request $request)
     {
@@ -33,24 +35,27 @@ class OrderController extends Controller
         {
             $data = response()->json([
                 'errors' => $validator->errors(),
-                'data' => $request ->all()
-            ],Response::HTTP_BAD_REQUEST);
+                'data' => $request->all()
+            ], Response::HTTP_BAD_REQUEST);
         }
+
         return $data;
     }
+    
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $orders = Order::all();
-        $orders->load([$orders,Response::HTTP_OK]);
+        $orders->load(['observation','causal']);
+        return response()->json($orders, Response::HTTP_OK);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store( Request $request, Order $order)
+    public function store(Request $request)
     {
         $data = $this->applyValidator($request);
         if(!empty($data))
@@ -59,11 +64,11 @@ class OrderController extends Controller
         }
 
         $order = Order::create($request->all());
-        $respone =[
-            'message' => 'registro creado exitosamente',
-            'causal' => $order
+        $response = [
+            'message' => 'Registro creado exitosamente',
+            'order' => $order
         ];
-        return response()->json($respone,Response::HTTP_CREATED);
+        return response()->json($response, Response::HTTP_CREATED);
     }
 
     /**
@@ -71,8 +76,8 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load(['technician','type_activity']);
-        return response()->json($order,Response::HTTP_OK);
+        $order->load(['observation','causal']);
+        return response()->json($order, Response::HTTP_OK);
     }
 
     /**
@@ -80,12 +85,18 @@ class OrderController extends Controller
      */
     public function update(Request $request, Order $order)
     {
-        $order-> delete();
-        $respone =[
-            'message' => 'registro eliminado exitosamente',
-            'causal' => $order->id
+        $data = $this->applyValidator($request);
+        if(!empty($data))
+        {
+            return $data;
+        }
+
+        $order->update($request->all());
+        $response = [
+            'message' => 'Registro actualizado exitosamente',
+            'order' => $order
         ];
-        return response()->json($respone,Response::HTTP_OK);
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**
@@ -93,40 +104,37 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
-        $order-> delete();
-        $respone =[
-            'message' => 'registro eliminado exitosamente',
-            'causal' => $order->id
+        $order->delete();
+        $response = [
+            'message' => 'Registro eliminado exitosamente',
+            'order' => $order->id
         ];
-        return response()->json($respone,Response::HTTP_OK);
+        return response()->json($response, Response::HTTP_OK);
     }
 
-
-
-
+    /**
+     * agrega una nueva actividad a una orden
+     */
     public function add_activity(Order $order, Activity $activity)
-
     {
         $order->activities()->attach($activity->id);
-        $respone =[
-            'message' => 'actividad agregada exitosamente',
-            'causal' => $order->activities
+        $response = [
+            'message' => 'Actividad agregada exitosamente',
+            'order_activity' => $order->activities
         ];
-        return response()->json($respone,Response::HTTP_OK);
-
-
+        return response()->json($response, Response::HTTP_OK);
     }
 
+    /**
+     * remueve una actividad a una orden
+     */
     public function remove_activity(Order $order, Activity $activity)
-
     {
-        $order->activities()->attach($activity->id);
-        $respone =[
-            'message' => 'actividad eliminada exitosamente',
-            'causal' => $order->activities
+        $order->activities()->detach($activity->id);
+        $response = [
+            'message' => 'Actividad eliminada exitosamente',
+            'order_activity' => $order->activities
         ];
-        return response()->json($respone,Response::HTTP_OK);
-
+        return response()->json($response, Response::HTTP_OK);
     }
-
 }

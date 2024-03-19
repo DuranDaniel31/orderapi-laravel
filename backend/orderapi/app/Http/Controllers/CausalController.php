@@ -3,45 +3,43 @@
 namespace App\Http\Controllers;
 
 use App\Models\Causal;
-
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
 class CausalController extends Controller
 {
-
     private $rules = [
         'description' => 'required|string|max:50|min:3',
     ];
 
-    private $traductionAttributes = array(
+    private $traductionAttributes = [
         'description' => 'descripción',
-    );
+    ];
 
     public function applyValidator(Request $request)
     {
         $validator = Validator::make($request->all(), $this->rules);
         $validator->setAttributeNames($this->traductionAttributes);
         $data = [];
-        if($validator-> fails())
+        if($validator->fails())
         {
-            $data  = response()->json([
-                'errors ' => $validator->errors(),
+            $data = response()->json([
+                'errors' => $validator->errors(),
                 'data' => $request->all()
-            ],Response::HTTP_BAD_REQUEST);
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         return $data;
     }
-
+    
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-      $causals = Causal::all();
-      return response()->json($causals, Response::HTTP_OK);
+        $causals = Causal::all();
+        return response()->json($causals, Response::HTTP_OK);
     }
 
     /**
@@ -54,20 +52,19 @@ class CausalController extends Controller
         {
             return $data;
         }
+
         $causal = Causal::create($request->all());
-        $reponse = [
+        $response = [
             'message' => 'Registro creado exitosamente',
             'causal' => $causal
         ];
-
-        return response()->json($reponse, Response::HTTP_CREATED);
-
+        return response()->json($response, Response::HTTP_CREATED);
     }
 
     /**
      * Display the specified resource.
-     */
-    public function show(Causal $causal)
+     */ 
+    public function show(Causal $causal) 
     {
         return response()->json($causal, Response::HTTP_OK);
     }
@@ -82,13 +79,13 @@ class CausalController extends Controller
         {
             return $data;
         }
-        $causal -> update($request->all());
-        $reponse = [
+
+        $causal->update($request->all());
+        $response = [
             'message' => 'Registro actualizado exitosamente',
             'causal' => $causal
         ];
-
-        return response()->json($reponse, Response::HTTP_OK);
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**
@@ -96,12 +93,11 @@ class CausalController extends Controller
      */
     public function destroy(Causal $causal)
     {
-        $causal -> delete();
-        $reponse = [
-          'message' => 'Registro eliminado exitosamente',
+        $causal->delete();
+        $response = [
+            'message' => 'Registro eliminado exitosamente',
             'causal' => $causal->id
         ];
-        return response()->json($reponse, Response::HTTP_OK);
+        return response()->json($response, Response::HTTP_OK);
     }
 }
-

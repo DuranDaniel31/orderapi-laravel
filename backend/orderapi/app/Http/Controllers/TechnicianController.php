@@ -28,16 +28,17 @@ class TechnicianController extends Controller
         $validator = Validator::make($request->all(), $this->rules);
         $validator->setAttributeNames($this->traductionAttributes);
         $data = [];
-        if ($validator->fails()) {
+        if($validator->fails())
+        {
             $data = response()->json([
                 'errors' => $validator->errors(),
                 'data' => $request->all()
-            ],  Response::HTTP_BAD_REQUEST);
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         return $data;
     }
-
+    
     /**
      * Display a listing of the resource.
      */
@@ -53,16 +54,16 @@ class TechnicianController extends Controller
     public function store(Request $request)
     {
         $data = $this->applyValidator($request);
-        if (!empty($data)) {
+        if(!empty($data))
+        {
             return $data;
         }
 
         $technician = Technician::create($request->all());
         $response = [
             'message' => 'Registro creado exitosamente',
-            'technician'  => $technician
+            'technician' => $technician
         ];
-
         return response()->json($response, Response::HTTP_CREATED);
     }
 
@@ -80,17 +81,17 @@ class TechnicianController extends Controller
     public function update(Request $request, Technician $technician)
     {
         $data = $this->applyValidator($request);
-        if (!empty($data)) {
+        if(!empty($data))
+        {
             return $data;
         }
 
         $technician->update($request->all());
-        $data = [
+        $response = [
             'message' => 'Registro actualizado exitosamente',
-            'technician'  => $technician
+            'technician' => $technician
         ];
-
-        return response()->json($data, Response::HTTP_OK);
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**
@@ -99,11 +100,10 @@ class TechnicianController extends Controller
     public function destroy(Technician $technician)
     {
         $technician->delete();
-        $data = [
+        $response = [
             'message' => 'Registro eliminado exitosamente',
-            'technician'  => $technician->id
+            'technician' => $technician->id
         ];
-
-        return response()->json($data, Response::HTTP_OK);
+        return response()->json($response, Response::HTTP_OK);
     }
 }

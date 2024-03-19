@@ -8,9 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Activity extends Model
 {
     use HasFactory;
-
     protected $table = 'activity';
-
     protected $fillable = [
         'description',
         'hours',
@@ -19,11 +17,12 @@ class Activity extends Model
     ];
 
     /**
-     * se debe colocar el nombre de la FK ya que esta hace referencia al campo document de apprentice
-     * y por llamarse diferente a 'id' debe especificarse
-    */
+     * se debe colocar el nombre de la FK ya que ésta hace referencia al
+     * campo document de technician y por llamarse diferente a 'id'
+     * debe especificarse manualmente
+     */
     public function technician()
-    {        
+    {
         return $this->belongsTo(Technician::class, 'technician_id');
     }
 
@@ -32,8 +31,9 @@ class Activity extends Model
         return $this->belongsTo(TypeActivity::class, 'type_id');
     }
 
-    public function orders(){
-        return $this->belongsToMany(Order::class, 'order_activity', 'order_id', 'activity_id');
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class, 'order_activity',
+                                    'order_id', 'activity_id');
     }
-
 }

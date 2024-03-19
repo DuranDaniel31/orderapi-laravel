@@ -9,37 +9,37 @@ use Illuminate\Support\Facades\Validator;
 
 class ObservationController extends Controller
 {
-
     private $rules = [
         'description' => 'required|string|max:50|min:3',
     ];
 
-    private $traductionAttributes = array(
+    private $traductionAttributes = [
         'description' => 'descripción',
-    );
+    ];
 
     public function applyValidator(Request $request)
     {
         $validator = Validator::make($request->all(), $this->rules);
         $validator->setAttributeNames($this->traductionAttributes);
         $data = [];
-        if($validator-> fails())
+        if($validator->fails())
         {
-            $data  = response()->json([
-                'errors ' => $validator->errors(),
+            $data = response()->json([
+                'errors' => $validator->errors(),
                 'data' => $request->all()
-            ],Response::HTTP_BAD_REQUEST);
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         return $data;
     }
+    
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $observations = Observation::all();
-        return response()->json($observations,Response::HTTP_OK);
+        return response()->json($observations, Response::HTTP_OK);
     }
 
     /**
@@ -52,13 +52,13 @@ class ObservationController extends Controller
         {
             return $data;
         }
-        $observation = Observation::create($request->all());
-        $reponse = [
-            'message' => 'Registro creado exitosamente',
-            'causal' => $observation
-        ];
 
-        return response()->json($reponse, Response::HTTP_CREATED);
+        $observation = Observation::create($request->all());
+        $response = [
+            'message' => 'Registro creado exitosamente',
+            'observation' => $observation
+        ];
+        return response()->json($response, Response::HTTP_CREATED);
     }
 
     /**
@@ -79,13 +79,13 @@ class ObservationController extends Controller
         {
             return $data;
         }
-        $observation -> update($request->all());
-        $reponse = [
-            'message' => 'Registro actualizado exitosamente',
-            'causal' => $observation
-        ];
 
-        return response()->json($reponse, Response::HTTP_OK);
+        $observation->update($request->all());
+        $response = [
+            'message' => 'Registro actualizado exitosamente',
+            'observation' => $observation
+        ];
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**
@@ -93,11 +93,11 @@ class ObservationController extends Controller
      */
     public function destroy(Observation $observation)
     {
-        $observation -> delete();
-        $reponse = [
-          'message' => 'Registro eliminado exitosamente',
-            'causal' => $observation->id
+        $observation->delete();
+        $response = [
+            'message' => 'Registro eliminado exitosamente',
+            'observation' => $observation->id
         ];
-        return response()->json($reponse, Response::HTTP_OK);
+        return response()->json($response, Response::HTTP_OK);
     }
 }

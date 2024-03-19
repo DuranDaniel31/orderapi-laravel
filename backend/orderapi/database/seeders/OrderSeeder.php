@@ -17,18 +17,17 @@ class OrderSeeder extends Seeder
             [
                 'legalization_date' => '2023-02-20',
                 'address' => 'Av. Siempre viva',
-                'city' => 'Ciudad de México',
+                'city' => 'Springfield',
                 'observation_id' => null,
                 'causal_id' => 1
             ],
             [
                 'legalization_date' => '2023-02-20',
-                'address' => 'calle falsa 123',
-                'city' => 'Ciudad de México',
+                'address' => 'Calle falsa 123',
+                'city' => 'Springfield',
                 'observation_id' => 1,
                 'causal_id' => 2
             ]
         ]);
     }
 }
-

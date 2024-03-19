@@ -6,25 +6,23 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Validator;
 
-class Authcontroller extends Controller
+class AuthController extends Controller
 {
     private $rules = [
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users',
-        'password' => 'required|string|min:8',
+        'password' => 'required|string|min:8|max:255',
         'password_confirmation' => 'required|same:password'
     ];
-
+    
     private $traductionAttributes = array(
         'name' => 'nombre',
         'password' => 'contraseña'
     );
 
-    /**
-     * Display a listing of the resource.
-     */
     public function applyValidator(Request $request)
     {
         $validator = Validator::make($request->all(), $this->rules);
@@ -34,11 +32,16 @@ class Authcontroller extends Controller
         {
             $data = response()->json([
                 'errors' => $validator->errors(),
-                'data' => $request ->all()
-            ],Response::HTTP_BAD_REQUEST);
+                'data' => $request->all()
+            ], Response::HTTP_BAD_REQUEST);
         }
+
         return $data;
     }
+    
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
         //
@@ -76,6 +79,9 @@ class Authcontroller extends Controller
         //
     }
 
+    /**
+     * inicia sesión de un usuario y genera un token
+     */
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -86,7 +92,7 @@ class Authcontroller extends Controller
         if(Auth::attempt($credentials))
         {
             $user = Auth::user();
-            $token = $user->CreateToken('token')->plainTextToken;
+            $token = $user->createToken('token')->plainTextToken;
             return response()->json([
                 'user' => $user,
                 'token' => $token,
@@ -96,20 +102,26 @@ class Authcontroller extends Controller
         else
         {
             return response()->json([
-               'message' => 'Credenciales incorrectas'
+                'message' => 'Credenciales incorrectas'
             ], Response::HTTP_UNAUTHORIZED);
         }
     }
 
+    /**
+     * Cierrar una sesión y borra el token
+     */
     public function logout(Request $request)
     {
         $user = Auth::user();
         $user->tokens()->where('id', $user->currentAccessToken()->id)->delete();
         return response()->json([
-            'message' => 'session cerrada exitosamente'
+            'message' => 'Sesión cerrada exitosamente'
         ], Response::HTTP_OK);
     }
 
+    /**
+     * crea un nuevo usuario
+     */
     public function register(Request $request)
     {
         $data = $this->applyValidator($request);
@@ -117,12 +129,12 @@ class Authcontroller extends Controller
         {
             return $data;
         }
-        $request['password'] =  bcrypt($request['password']);
+
+        $request['password'] = bcrypt($request['password']);
         $user = User::create($request->all());
-        $response = [
+        $response =[
             'message' => 'Registro creado exitosamente',
             'user' => $user
-
         ];
 
         return response()->json($response, Response::HTTP_CREATED);
